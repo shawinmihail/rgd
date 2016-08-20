@@ -5,7 +5,7 @@ import networkx as nx
 def create_simple_graph():
 
     g = nx.DiGraph()
-    for i in range(9):
+    for i in range(11):
         g.add_node(i+1)
 
     loads_list = list()
@@ -47,5 +47,7 @@ def create_simple_graph():
     g.add_edge(8, 7, d=1, cap=1, cur=0)
     g.add_edge(9, 8, d=1, cap=1, cur=0)
     g.add_edge(10, 9, d=1,cap=1, cur=0)
+
+    g.add_edge(12, 11, d=1,cap=1, cur=0)
 
     return g, loads_list
