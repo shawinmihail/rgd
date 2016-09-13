@@ -88,6 +88,19 @@ def create_grid():
         for e in edges:
             g.add_edge(i, e, d=1, cap=cap, cur=0)
 
+    g.remove_edge(12, 18)
+    g.remove_edge(18, 12)
+    g.remove_edge(13, 19)
+    g.remove_edge(19, 13)
+    g.remove_edge(25, 26)
+    g.remove_edge(26, 25)
+    g.remove_edge(27, 28)
+    g.remove_edge(28, 27)
+    g.remove_edge(28, 22)
+    g.remove_edge(22, 28)
+    g.remove_edge(14, 15)
+    g.remove_edge(15, 14)
+
 
 
     pos = dict()
@@ -99,14 +112,25 @@ def create_grid():
     loads2 = [[3, 11, 0.45]]
     loads3 = [[7, 23, 0.25]]
     loads4 = [[2, 14, 0.33]]
+    loads5 = [[22, 25, 0.41]]
+    loads6 = [[21, 28, 0.33]]
+    loads7 = [[6, 9, 0.51]]
+    loads8 = [[14, 25, 0.33]]
+    loads9 = [[13, 19, 0.33]]
+    loads10 = [[20, 31, 0.33]]
+
     loads_list.append(loads1)
     loads_list.append(loads2)
     loads_list.append(loads3)
     loads_list.append(loads4)
+    loads_list.append(loads5)
+    loads_list.append(loads6)
+    loads_list.append(loads7)
+    loads_list.append(loads8)
+    loads_list.append(loads9)
+    loads_list.append(loads10)
 
-    g.node[1]["loads"] = loads1
-    g.node[3]["loads"] = loads2
-    g.node[7]["loads"] = loads3
-    g.node[2]["loads"] = loads4
+    for loads in loads_list:
+        g.node[loads[0][0]]["loads"] = loads
 
     return g, loads_list, pos

@@ -8,12 +8,23 @@ from copy import copy
 BAD = "bad"
 GOOD = "good"
 NEXT = "next"
+COUNTER = 0
 
-graph, loads_list, pos = GraphMaker.create_simple_graph()
+# graph, loads_list, pos = GraphMaker.create_simple_graph()
 graph, loads_list, pos = GraphMaker.create_grid()
 
-def show_problems(paths, bad_ways):
+def generate_path_msg(paths):
+    text = ""
+    for path in paths:
+        if len(path) == 0:
+            continue
+        for way in path:
+            text += "%s;" % way[0]
+        text += "%s\n" % (path[-1][1])
+    return text
 
+def show_problems(paths, bad_ways):
+    global COUNTER
     colors = list()
     labels_dict = dict()
 
@@ -42,7 +53,10 @@ def show_problems(paths, bad_ways):
     nx.draw_networkx_labels(graph, pos, font_color="white")
     nx.draw_networkx_edges(graph, pos, width=2, alpha=0.5, edge_color=colors)
     nx.draw_networkx_edge_labels(graph, pos, labels_dict)
+    plt.annotate(generate_path_msg(paths), xy=(5.1, 4))
     plt.show()
+    # plt.savefig("%s.png" % COUNTER)
+    # COUNTER += 1
 
 def calculate_init():
     loads_and_paths = list()
@@ -92,6 +106,8 @@ def iterate(result, loads_and_paths, bad_ways):
         path = load_and_path[1]
         load = load_and_path[0]
         cur = load[2]
+        # print(load_and_path)
+        # print(graph.node[load[0]]["loads"])
         for way in path:
             graph.edge[way[0]][way[1]]["cur"] -= cur
             graph.edge[way[0]][way[1]]["cap"] -= cur
@@ -112,8 +128,7 @@ def iterate(result, loads_and_paths, bad_ways):
     else:
         return NEXT, bad_ways
 
-def csv_pats(paths):
-    file = open("paths.csv", "w")
+def csv_text(paths):
     text = ""
     for path in paths:
         if len(path) == 0:
@@ -121,26 +136,36 @@ def csv_pats(paths):
         for way in path:
             text += "%s;" % way[0]
         text += "%s\n" % (path[-1][1])
+    return text
+
+def save_paths_csv(paths_list):
+    c = 1
+    text = ""
+    for paths in paths_list:
+        text += "it%s\n%s\n" % (c, csv_text(paths))
+        c += 1
+    file = open("res.csv", "w")
     file.write(text)
-    print(text)
     file.close()
+
 
 result = list()
 
+path_list = list()
 loads_and_paths, paths, bad_ways = calculate_init()
 show_problems(paths, bad_ways)
+path_list.append(paths)
 
 while True:
     res, bad_ways = iterate(result, loads_and_paths, bad_ways)
     loads_and_paths, paths, bad_ways = calculate_init()
     show_problems(paths, bad_ways)
+    path_list.append(paths)
     if res == GOOD:
         print("solved")
-        csv_pats(paths)
         break
     if res == BAD:
         print("can't resolve")
         break
 
-
-
+save_paths_csv(path_list)
