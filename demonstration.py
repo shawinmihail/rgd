@@ -10,6 +10,7 @@ GOOD = "good"
 NEXT = "next"
 
 graph, loads_list, pos = GraphMaker.create_simple_graph()
+graph, loads_list, pos = GraphMaker.create_grid()
 
 def show_problems(paths, bad_ways):
 
@@ -50,7 +51,7 @@ def calculate_init():
             try:
                 path = nx.shortest_path(graph, load[0], load[1],  "d")
             except:
-                return BAD, list()
+                return BAD, list(), list()
 
             way_path = list()
             for way in zip(path, path[1:]):
@@ -99,7 +100,10 @@ def iterate(result, loads_and_paths, bad_ways):
 
     for way_and_bad_load_and_path in ways_and_bad_loads_and_paths:
         way = way_and_bad_load_and_path[0]
-        graph.remove_edge(way[0], way[1])
+        try:
+            graph.remove_edge(way[0], way[1])
+        except:
+            pass
 
 
     result.append(good_loads_and_paths)
@@ -108,40 +112,35 @@ def iterate(result, loads_and_paths, bad_ways):
     else:
         return NEXT, bad_ways
 
+def csv_pats(paths):
+    file = open("paths.csv", "w")
+    text = ""
+    for path in paths:
+        if len(path) == 0:
+            continue
+        for way in path:
+            text += "%s;" % way[0]
+        text += "%s\n" % (path[-1][1])
+    file.write(text)
+    print(text)
+    file.close()
+
 result = list()
 
 loads_and_paths, paths, bad_ways = calculate_init()
 show_problems(paths, bad_ways)
-res, bad_ways = iterate(result, loads_and_paths, bad_ways)
-loads_and_paths, paths, bad_ways = calculate_init()
-show_problems(paths, bad_ways)
-res, bad_ways = iterate(result, loads_and_paths, bad_ways)
-loads_and_paths, paths, bad_ways = calculate_init()
-show_problems(paths, bad_ways)
+
+while True:
+    res, bad_ways = iterate(result, loads_and_paths, bad_ways)
+    loads_and_paths, paths, bad_ways = calculate_init()
+    show_problems(paths, bad_ways)
+    if res == GOOD:
+        print("solved")
+        csv_pats(paths)
+        break
+    if res == BAD:
+        print("can't resolve")
+        break
 
 
 
-# res, bad_ways, paths = iterate(result)
-# show_problems(bad_ways, paths)
-
-
-# try_solve_problems(result)
-# res, bws_ps = find_problems()
-# show_problems(bws_ps)
-
-
-# k = 0
-# while True:
-#     print(k)
-#     k += 1
-#
-#     r1, ws_ps = find_problems(graph)
-#     print(ws_ps)
-#     show_problems(graph, ws_ps)
-#     res = try_solve_problems(graph, result)
-#     if res == GOOD:
-#         print("solved")
-#         break
-#     if res == BAD:
-#         print("can't resolve")
-#         break
